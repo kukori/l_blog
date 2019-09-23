@@ -8,12 +8,16 @@
         {{$post->body}}
     </div>
     <hr>
-    <small>Written on {{$post->created_at}}</small>
+    <small>Written on {{$post->created_at}} by {{$post->user->name}} </small>
     <hr>
-    <a href="/posts/{{$post->id}}/edit" class="btn btn-default">Edit</a>
+    @auth
+        @if(Auth::user()->id == $post->user_id)
+            <a href="/posts/{{$post->id}}/edit" class="btn btn-default">Edit</a>
 
-    {!! Form::open(['action' => ['PostController@destroy', $post->id], 'method' => 'POST', 'class' => 'pull-right']) !!}
-        {{Form::hidden('_method', 'DELETE')}}
-        {{Form::submit('DELETE', ['class' => 'btn btn-danger'])}}
-    {!! Form::close() !!}
+            {!! Form::open(['action' => ['PostController@destroy', $post->id], 'method' => 'POST', 'class' => 'pull-right']) !!}
+                {{Form::hidden('_method', 'DELETE')}}
+                {{Form::submit('DELETE', ['class' => 'btn btn-danger'])}}
+            {!! Form::close() !!}
+        @endif
+    @endauth
 @endsection('')

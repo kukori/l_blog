@@ -7,6 +7,11 @@ use App\Post;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -72,6 +77,11 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = Post::find($id);
+
+        if(auth()->user()->id !== $post->user_id) {
+            return redirect('/posts')->with('error', 'Unauthorized');
+        }
+
         return view('posts.edit')->with('post', $post);
     }
 
@@ -89,6 +99,11 @@ class PostController extends Controller
             'body' => 'required'
         ]);
         $post = Post::find($id);
+
+        if(auth()->user()->id !== $post->user_id) {
+            return redirect('/posts')->with('error', 'Unauthorized');
+        }
+
         $post->title = $request->input('title');
         $post->body = $request->input('body');
         $post->save();
@@ -106,6 +121,10 @@ class PostController extends Controller
     {
         $post = Post::find($id);
         $post->delete();
+
+        if(auth()->user()->id !== $post->user_id) {
+            return redirect('/posts')->with('error', 'Unauthorized');
+        }
 
         return redirect('/posts')->with('success', 'Post Deleted');
     }
